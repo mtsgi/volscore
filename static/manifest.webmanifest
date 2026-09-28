@@ -1,0 +1,26 @@
+{
+  "id": "./",
+  "name": "VOLSCORE",
+  "short_name": "VOLSCORE",
+  "description": "スコアを確認するツール",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f5f1",
+  "theme_color": "#075d49",
+  "icons": [
+    {
+      "src": "./icon_64.png",
+      "sizes": "64x64",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
