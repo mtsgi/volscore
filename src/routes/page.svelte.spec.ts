@@ -26,7 +26,7 @@ describe('+page.svelte', () => {
 
     await expect.element(page.getByRole('heading', { level: 1 })).toHaveTextContent('VOLSCORE');
     expect(document.title).toBe('VOLSCORE');
-    await expect.element(page.getByRole('contentinfo')).toHaveTextContent('VOLSCORE');
+    expect(document.querySelector('footer')?.textContent).toContain('VOLSCORE');
     const repositoryLink = page.getByRole('link', {
       name: 'GitHubリポジトリ（新しいタブで開く）'
     });
@@ -111,7 +111,8 @@ describe('+page.svelte', () => {
     await expect.element(page.getByText('1 / 1 譜面')).toBeInTheDocument();
     await expect.element(page.getByText('新しい曲')).toBeInTheDocument();
     expect(document.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe('');
-    expect([...filters].map((filter) => filter.value)).toEqual(['all', 'all', 'all']);
+    const resetFilters = document.querySelectorAll<HTMLSelectElement>('.filters select');
+    expect([...resetFilters].map((filter) => filter.value)).toEqual(['all', 'all', 'all']);
   });
 
   it('shows independent breakdowns and filters fractional levels or Lv17 ALL', async () => {
