@@ -1,28 +1,36 @@
-/// <reference no-default-lib="true" />
-/// <reference lib="esnext" />
-/// <reference lib="webworker" />
-/// <reference types="@sveltejs/kit" />
+import { self } from '$app/service-worker';
+import { version } from '$app/env';
+import { assets, immutable, prerendered } from '$app/manifest';
+import { asset, resolve } from '$app/paths';
 
-import { base, build, files, prerendered, version } from '$service-worker';
-
-const worker = globalThis as unknown as ServiceWorkerGlobalScope;
 const cacheName = `volscore-${version}`;
-const precacheUrls = [...new Set([...build, ...files, ...prerendered])];
+const appShellUrl = resolve('/');
+const resolveFromBase = (path: string) =>
+  new URL(path.replace(/^\/+/, ''), new URL(appShellUrl, self.location.origin)).pathname;
+const precacheUrls = [
+  ...new Set([
+    ...immutable.map(({ path }) => resolveFromBase(path)),
+    ...assets.map(({ path }) => asset(path)),
+    ...prerendered.map(({ path }) => resolve(path))
+  ])
+];
 const precachePaths = new Set(
-  [...build, ...files].map((asset) => new URL(asset, worker.location.origin).pathname)
+  [
+    ...immutable.map(({ path }) => resolveFromBase(path)),
+    ...assets.map(({ path }) => asset(path))
+  ].map((path) => new URL(path, self.location.origin).pathname)
 );
-const appShellUrl = `${base || ''}/`;
 
-worker.addEventListener('install', (event) => {
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(cacheName).then(async (cache) => {
       await cache.addAll(precacheUrls);
-      await worker.skipWaiting();
+      await self.skipWaiting();
     })
   );
 });
 
-worker.addEventListener('activate', (event) => {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then(async (cacheNames) => {
       await Promise.all(
@@ -30,16 +38,16 @@ worker.addEventListener('activate', (event) => {
           .filter((name) => name.startsWith('volscore-') && name !== cacheName)
           .map((name) => caches.delete(name))
       );
-      await worker.clients.claim();
+      await self.clients.claim();
     })
   );
 });
 
-worker.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', (event) => {
   const request = event.request;
   const requestUrl = new URL(request.url);
 
-  if (request.method !== 'GET' || requestUrl.origin !== worker.location.origin) return;
+  if (request.method !== 'GET' || requestUrl.origin !== self.location.origin) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(

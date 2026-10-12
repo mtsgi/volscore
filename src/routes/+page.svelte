@@ -4,9 +4,9 @@
     getLevelFilterOptions,
     groupScoresByDifficulty,
     groupScoresByLevel
-  } from '$lib/score/aggregate.js';
-  import type { CsvIssue, LevelFilterOption, ScoreRow } from '$lib/score/types.js';
-  import { parseScoreCsv } from '$lib/csv/parse-score-csv.js';
+  } from '#lib/score/aggregate.js';
+  import type { CsvIssue, LevelFilterOption, ScoreRow } from '#lib/score/types.js';
+  import { parseScoreCsv } from '#lib/csv/parse-score-csv.js';
 
   type SortKey = keyof ScoreRow;
   type SortDirection = 'asc' | 'desc';

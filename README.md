@@ -4,11 +4,10 @@
 
 ## 開発
 
-Node.js 22以降を使います。
+Node.js 24を使います。
 
 ```sh
 npm install
-npx playwright install chromium
 npm run dev
 ```
 
